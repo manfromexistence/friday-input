@@ -111,7 +111,7 @@ export function Friday() {
         newGlassDiv.className = 'glass-effect-div';
         newGlassDiv.style.animation =
           `slideUp ${slideAnimationDuration / 1000}s ease-out forwards, ` +
-          `animate-sides 10s linear infinite`;
+          `animate-sides 10s linear infinite`; // Using animate-sides for glass div color cycle
         document.body.appendChild(newGlassDiv);
         glassDivRef.current = newGlassDiv;
         void newGlassDiv.offsetWidth; 
@@ -229,7 +229,7 @@ export function Friday() {
         .friday-top span,
         .friday-bottom span {
           position: relative;
-          height: 15vh; 
+          height: 25vh; /* Increased from 15vh */
           width: 4vw; 
         }
         
@@ -307,3 +307,4 @@ export function Friday() {
     </>
   );
 }
+
