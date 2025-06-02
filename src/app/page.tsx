@@ -1,4 +1,4 @@
-import { HueAnimatedTextarea } from "@/app/input/page";
+import { HueAnimatedTextarea } from "@/app/hue-animated-textarea/page";
 
 export default function HomePage() {
   return (
