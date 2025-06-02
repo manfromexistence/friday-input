@@ -4,34 +4,20 @@
 import { motion } from "framer-motion";
 
 interface HelloGlowProps {
-  glowThickness?: number;
-  glowLength?: number;
+  className?: string; // Allow className to be passed for styling the container
 }
 
-export function HelloGlow({ glowThickness = 20, glowLength = 250 }: HelloGlowProps) {
-  const spanHeight = 25; // Fixed height of the span element
-  const spanWidth = 5;   // Fixed width of the span element
-
-  // Calculate offsets for the ::after pseudo-element to achieve desired glow dimensions
-  // These offsets are relative to the fixed-size span
-  const topOffset = (spanHeight - glowThickness) / 2;
-  const bottomOffset = (spanHeight - glowThickness) / 2;
-  const leftOffset = (spanWidth - glowLength) / 2;
-  const rightOffset = (spanWidth - glowLength) / 2;
-
+export function HelloGlow({ className }: HelloGlowProps) {
   return (
     <>
       <motion.div
-        className="hello flex flex-wrap justify-center transition-all bg-red-500 h-[500px] max-w-1/2"
+        className={cn(
+          "hello flex flex-wrap justify-center transition-all",
+          className // Apply external className here
+        )}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        style={{
-          '--glow-top-offset': `${topOffset}px`,
-          '--glow-bottom-offset': `${bottomOffset}px`,
-          '--glow-left-offset': `${leftOffset}px`,
-          '--glow-right-offset': `${rightOffset}px`,
-        } as React.CSSProperties}
       >
         {[...Array(20)].map((_, i) => (
           <span
@@ -64,10 +50,11 @@ export function HelloGlow({ glowThickness = 20, glowLength = 250 }: HelloGlowPro
                   background: #48ff00; /* Moved from keyframes for initial state */
                   box-shadow: 0 0 5px #48ff00, 0 0 15px #48ff00, 0 0 30px #48ff00; /* Adjusted for consistent glow */
 
-                  top: var(--glow-top-offset);
-                  bottom: var(--glow-bottom-offset);
-                  left: var(--glow-left-offset);
-                  right: var(--glow-right-offset);
+                  /* Make ::after exact size of parent span */
+                  top: 0;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
                 }
 
                 .hello span.start::after,
@@ -78,8 +65,6 @@ export function HelloGlow({ glowThickness = 20, glowLength = 250 }: HelloGlowPro
                 @keyframes hello-glow {
                   0% {
                     filter: hue-rotate(0deg);
-                    /* Background and box-shadow can be set initially and just filter rotates */
-                    /* Or, if you want the shadow to pulse/change size, define it here too */
                     box-shadow: 0 0 5px #48ff00, 0 0 15px #48ff00, 0 0 30px #48ff00, 0 0 50px #48ff00;
                   }
 
@@ -91,4 +76,11 @@ export function HelloGlow({ glowThickness = 20, glowLength = 250 }: HelloGlowPro
             `}</style>
     </>
   );
+}
+
+// Helper function cn for class names, if not already globally available in your project setup for this component
+// If you have a global cn utility (e.g., from shadcn/ui), you can remove this local one.
+// For demonstration, I'll include a basic version.
+function cn(...classes: (string | undefined | null | false)[]) {
+  return classes.filter(Boolean).join(' ');
 }
