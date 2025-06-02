@@ -6,9 +6,10 @@ import { cn } from "@/lib/utils"; // Assuming cn is available via this path
 
 interface HelloGlowProps {
   className?: string; // Allow className to be passed for styling the container
+  spanCount?: number; // Allow customizing the number of spans
 }
 
-export function HelloGlow({ className }: HelloGlowProps) {
+export function HelloGlow({ className, spanCount = 25 }: HelloGlowProps) {
   return (
     <>
       <motion.div
@@ -16,14 +17,15 @@ export function HelloGlow({ className }: HelloGlowProps) {
           "hello transition-all", // Base classes
           className // External className for sizing, background, etc.
         )}
+        style={{ '--span-count': spanCount } as React.CSSProperties}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
       >
-        {Array.from({ length: 25 }).map((_, i) => (
+        {Array.from({ length: spanCount }).map((_, i) => (
           <span
             key={i}
-            className={i === 0 ? "start" : i === 24 ? "end" : ""}
+            className={i === 0 ? "start" : i === (spanCount - 1) ? "end" : ""}
             style={{ "--i": i + 1 } as React.CSSProperties}
           />
         ))}
@@ -32,26 +34,26 @@ export function HelloGlow({ className }: HelloGlowProps) {
                 .hello {
                   position: relative;
                   display: grid; /* Use grid */
-                  grid-template-columns: repeat(25, 1fr); /* Distribute 25 spans into 25 columns */
+                  grid-template-columns: repeat(var(--span-count, 25), 1fr); /* Distribute spans into columns */
                   min-height: 25px; /* Default height for the glow area */
                   overflow: hidden; /* Clip glows if they exceed span bounds due to box-shadow */
                 }
 
                 .hello span {
                   position: relative;
-                  /* Spans will take full height of their grid row and 1/25th of container width */
+                  /* Spans will take full height of their grid row and 1/Nth of container width */
                 }
 
                 .hello span::after { /* Using only ::after */
                   content: "";
                   position: absolute;
-                  top: 0; /* Match parent span's top */
-                  bottom: 0; /* Match parent span's bottom */
-                  left: -1px; /* Make slightly wider to overlap */
-                  right: -1px; /* Make slightly wider to overlap */
                   animation: hello-glow 13s linear infinite;
                   animation-delay: calc(var(--i)*0.1s);
                   transform: rotate(90deg);
+                  top: 0; /* Match parent span's top */
+                  bottom: 0; /* Match parent span's bottom */
+                  left: -2px; /* Make slightly wider to overlap more */
+                  right: -2px; /* Make slightly wider to overlap more */
                 }
 
                 .hello span.start::after,
@@ -76,3 +78,4 @@ export function HelloGlow({ className }: HelloGlowProps) {
     </>
   );
 }
+
