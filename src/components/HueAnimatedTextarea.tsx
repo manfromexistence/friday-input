@@ -4,7 +4,7 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
-export default function HueAnimatedTextarea() {
+export function HueAnimatedTextarea() {
   return (
     <>
       <main className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-12 md:p-24 bg-background">
