@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Textarea } from "@/components/ui/textarea";
@@ -44,6 +45,8 @@ export function HueAnimatedTextarea() {
           </footer>
         </div>
       </main>
+      {/* Styles moved to src/app/page.tsx for component co-location, or can be global if this page is directly used */}
+      {/* If this page is used independently, its styles should be here or in globals.css */}
       <style jsx global>{`
           /* Styles for Hue Animated Textarea */
           @keyframes rotateHue { /* For the ::before glow */
@@ -153,3 +156,4 @@ export function HueAnimatedTextarea() {
     </>
   );
 }
+
