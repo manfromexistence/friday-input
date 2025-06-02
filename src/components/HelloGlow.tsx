@@ -29,7 +29,7 @@ export function HelloGlow() {
 
                 .hello span {
                   position: relative;
-                  height: 200px;
+                  height: 25px;
                   width: 5px;
                 }
 
