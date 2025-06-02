@@ -111,7 +111,7 @@ export function Friday() {
         newGlassDiv.className = 'glass-effect-div';
         newGlassDiv.style.animation =
           `slideUp ${slideAnimationDuration / 1000}s ease-out forwards, ` +
-          `animate-sides 10s linear infinite`;
+          `animate-sides 10s linear infinite`; // Using animate-sides for glass div color cycle
         document.body.appendChild(newGlassDiv);
         glassDivRef.current = newGlassDiv;
         void newGlassDiv.offsetWidth; // Trigger reflow
@@ -184,12 +184,15 @@ export function Friday() {
         .friday-left,
         .friday-right {
           position: fixed;
-          width: 100%;
+          width: 100%; /* Overridden for left/right to 100vh */
           display: flex;
           opacity: 0;
           visibility: hidden;
           transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
           z-index: ${FRIDAY_ANIMATION_Z_INDEX -1}; /* Ensure it's behind glass div */
+          --friday-span-bg: #0f0; /* Default green */
+          --friday-glow-color1: #48ff00;
+          --friday-glow-color2: #0f0;
         }
 
         .friday-top.visible,
@@ -213,18 +216,16 @@ export function Friday() {
 
         .friday-left {
           top: calc(50vh - 5px);
-          /* Adjusted for typical screen aspect ratios, might need tweaking */
-          right: calc(-50vh + 1.5vw); /* Approximate calc(-30px - 50vh) */
-          height: 10px; /* Effectively the 'width' of the vertical bar */
-          width: 100vh; /* Length of the vertical bar */
+          right: calc(-50vh + 1.5vw); 
+          height: 10px; 
+          width: 100vh; 
           transform: rotate(90deg);
           transform-origin: top right;
         }
 
         .friday-right {
           top: calc(50vh - 5px);
-          /* Adjusted for typical screen aspect ratios */
-          left: calc(-50vh + 1.5vw); /* Approximate calc(-20px - 50vh) */
+          left: calc(-50vh + 1.5vw); 
           height: 10px;
           width: 100vh;
           transform: rotate(90deg);
@@ -240,51 +241,43 @@ export function Friday() {
         }
         
         /* Spans for vertical borders (after 90deg rotation) */
+        /* These spans are children of .friday-left/right which is already rotated */
         .friday-left span,
         .friday-right span {
           position: relative;
-          height: 2vh; /* This becomes the 'thickness' of the segment */
-          width: 4%;  /* This becomes the 'length' of the segment along the 100vh bar */
+          height: 2vh; /* This becomes the 'thickness' of the segment along the 10px height of parent */
+          width: 4%;  /* This becomes the 'length' of the segment along the 100vh width of parent */
         }
 
         .friday-top span::before,
-        .friday-bottom span::before {
-          content: "";
-          position: absolute;
-          animation: animate-top-bottom 10s linear infinite;
-          animation-delay: calc(var(--i)*0.1s);
-          /* rotate: 90deg; This was in original, but seems incorrect for horizontal segment appearance */
-          background: #0f0; /* Fallback */
-          background: var(--friday-span-bg, #0f0);
-          top: -9px; /* Glow area */
-          bottom: -9px;
-          left: -5px;
-          right: -5px;
-          box-shadow:
-            0 0 4px var(--friday-glow-color1, #48ff00),
-            0 0 12px var(--friday-glow-color2, #0f0),
-            0 0 25px var(--friday-glow-color2, #0f0),
-            0 0 40px var(--friday-glow-color2, #0f0);
-        }
-
+        .friday-bottom span::before,
         .friday-left span::before,
         .friday-right span::before {
           content: "";
           position: absolute;
-          animation: animate-sides 10s linear infinite;
           animation-delay: calc(var(--i)*0.1s);
-          /* rotate: 90deg; This was in original for already rotated parent, seems redundant here */
-          background: #0f0; /* Fallback */
-          background: var(--friday-span-bg, #0f0);
-          top: -9px;
+          background: var(--friday-span-bg);
+          top: -9px; 
           bottom: -9px;
           left: -5px;
           right: -5px;
           box-shadow:
-            0 0 4px var(--friday-glow-color1, #0f0), /* Different base for sides for variety if desired */
-            0 0 12px var(--friday-glow-color2, #0f0),
-            0 0 25px var(--friday-glow-color2, #0f0),
-            0 0 40px var(--friday-glow-color2, #0f0);
+            0 0 4px var(--friday-glow-color1),
+            0 0 12px var(--friday-glow-color2),
+            0 0 25px var(--friday-glow-color2),
+            0 0 40px var(--friday-glow-color2);
+          transform: rotate(90deg); /* Crucial: Restored rotation for all segments */
+        }
+        
+        /* Specific animations for ::before elements */
+        .friday-top span::before,
+        .friday-bottom span::before {
+          animation: animate-top-bottom 10s linear infinite;
+        }
+        
+        .friday-left span::before,
+        .friday-right span::before {
+           animation: animate-sides 10s linear infinite;
         }
         
         @keyframes animate-top-bottom {
@@ -324,3 +317,5 @@ export function Friday() {
     </>
   );
 }
+
+    
