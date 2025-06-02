@@ -33,17 +33,12 @@ export function HelloGlow({ className }: HelloGlowProps) {
                   position: relative;
                   display: grid; /* Use grid */
                   grid-template-columns: repeat(20, 1fr); /* Distribute 20 spans into 20 columns */
-                  /* Rows will implicitly be one, taking the container's height.
-                     If no height is set on the container via className,
-                     this min-height provides a default. */
                   min-height: 25px; /* Default height for the glow area */
                   overflow: hidden; /* Clip glows if they exceed span bounds due to box-shadow */
-                  /* Removed: flex-wrap, justify-content, gap from flex version */
                 }
 
                 .hello span {
                   position: relative;
-                  /* Removed: flex-grow, flex-basis, min-height from span itself */
                 }
 
                 .hello span::after { /* Using only ::after */
@@ -51,13 +46,11 @@ export function HelloGlow({ className }: HelloGlowProps) {
                   position: absolute;
                   top: 0; /* Match parent span's top */
                   bottom: 0; /* Match parent span's bottom */
-                  left: 0; /* Match parent span's left */
-                  right: 0; /* Match parent span's right */
+                  left: -1px; /* Make slightly wider to overlap */
+                  right: -1px; /* Make slightly wider to overlap */
                   animation: hello-glow 13s linear infinite;
                   animation-delay: calc(var(--i)*0.1s);
-                  transition: all 0.5s ease-in-out;
                   transform: rotate(90deg);
-                  /* Background and box-shadow are applied in the animation */
                 }
 
                 .hello span.start::after,
