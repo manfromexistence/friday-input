@@ -29,7 +29,7 @@ export function HelloGlow() {
 
                 .hello span {
                   position: relative;
-                  height: 20px;
+                  height: 200px;
                   width: 5px;
                 }
 
@@ -45,8 +45,8 @@ export function HelloGlow() {
                     
                   top: 0px;
                   bottom: 0px;
-                  left: -15px;
-                  right: -205px;
+                  left: -0px;
+                  right: -0px;
                 }
 
                 .hello span.start::after,
