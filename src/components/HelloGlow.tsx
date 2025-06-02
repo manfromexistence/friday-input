@@ -8,10 +8,12 @@ interface HelloGlowProps {
   glowLength?: number;
 }
 
-export function HelloGlow({ glowThickness = 25, glowLength = 15 }: HelloGlowProps) {
+export function HelloGlow({ glowThickness = 20, glowLength = 250 }: HelloGlowProps) {
   const spanHeight = 25; // Fixed height of the span element
   const spanWidth = 5;   // Fixed width of the span element
 
+  // Calculate offsets for the ::after pseudo-element to achieve desired glow dimensions
+  // These offsets are relative to the fixed-size span
   const topOffset = (spanHeight - glowThickness) / 2;
   const bottomOffset = (spanHeight - glowThickness) / 2;
   const leftOffset = (spanWidth - glowLength) / 2;
@@ -20,7 +22,7 @@ export function HelloGlow({ glowThickness = 25, glowLength = 15 }: HelloGlowProp
   return (
     <>
       <motion.div
-        className="hello flex flex-wrap justify-center mt-64 transition-all"
+        className="hello flex flex-wrap justify-center transition-all bg-red-500 h-[500px] max-w-1/2"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -52,15 +54,16 @@ export function HelloGlow({ glowThickness = 25, glowLength = 15 }: HelloGlowProp
                   width: 5px;   /* Fixed width of the span container */
                 }
 
-                .hello span::after,
-                .hello span::before {
+                .hello span::after {
                   content: "";
                   position: absolute;
                   animation: hello-glow 13s linear infinite;
                   animation-delay: calc(var(--i)*0.1s);
                   transition: all 0.5s ease-in-out;
                   transform: rotate(90deg);
-                    
+                  background: #48ff00; /* Moved from keyframes for initial state */
+                  box-shadow: 0 0 5px #48ff00, 0 0 15px #48ff00, 0 0 30px #48ff00; /* Adjusted for consistent glow */
+
                   top: var(--glow-top-offset);
                   bottom: var(--glow-bottom-offset);
                   left: var(--glow-left-offset);
@@ -68,23 +71,21 @@ export function HelloGlow({ glowThickness = 25, glowLength = 15 }: HelloGlowProp
                 }
 
                 .hello span.start::after,
-                .hello span.end::after,
-                .hello span.start::before,
-                .hello span.end::before {
+                .hello span.end::after {
                   border-radius: var(--radius);
                 }
 
                 @keyframes hello-glow {
                   0% {
-                    background: #48ff00;
-                    box-shadow: 0 0 5px #48ff00, 0 0 15px #48ff00, 0 0 30px #48ff00;
                     filter: hue-rotate(0deg);
+                    /* Background and box-shadow can be set initially and just filter rotates */
+                    /* Or, if you want the shadow to pulse/change size, define it here too */
+                    box-shadow: 0 0 5px #48ff00, 0 0 15px #48ff00, 0 0 30px #48ff00, 0 0 50px #48ff00;
                   }
 
                   100% {
-                    background: #48ff00;
-                    box-shadow: 0 0 5px #48ff00, 0 0 15px #48ff00, 0 0 30px #48ff00, 0 0 50px #48ff00;
                     filter: hue-rotate(360deg);
+                    box-shadow: 0 0 5px #48ff00, 0 0 15px #48ff00, 0 0 30px #48ff00, 0 0 50px #48ff00;
                   }
                 }
             `}</style>
