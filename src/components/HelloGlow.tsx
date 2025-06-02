@@ -14,7 +14,7 @@ export function HelloGlow({ className, spanCount = 25 }: HelloGlowProps) {
     <>
       <motion.div
         className={cn(
-          "hello transition-all overflow-hidden h-64",
+          "hello transition-all overflow-hidden",
           className
         )}
         style={{ '--span-count': spanCount } as React.CSSProperties}
@@ -35,8 +35,8 @@ export function HelloGlow({ className, spanCount = 25 }: HelloGlowProps) {
           position: relative;
           display: grid;
           grid-template-columns: repeat(var(--span-count, 25), 1fr);
-          min-height: 25px; /* Default height for the glow area */
-          overflow: hidden; /* Clip glows if they exceed span bounds due to box-shadow */
+          min-height: 25px; /* Default height for the glow area if container has no height */
+          overflow: hidden; /* Clip glows */
         }
 
         .hello span {
@@ -49,11 +49,11 @@ export function HelloGlow({ className, spanCount = 25 }: HelloGlowProps) {
           position: absolute;
           animation: hello-glow 13s linear infinite;
           animation-delay: calc(var(--i)*0.1s);
-          /* transform: rotate(90deg); NO LONGER ROTATED */
           top: 0; 
           bottom: 0;
-          left: -2px; /* Increased overlap for vertical bars */
-          right: -2px; /* Increased overlap for vertical bars */
+          left: -5px; /* Increased overlap to remove gaps */
+          right: -5px; /* Increased overlap to remove gaps */
+          /* background, box-shadow and filter are in the animation */
         }
 
         .hello span.start::after,
@@ -65,12 +65,12 @@ export function HelloGlow({ className, spanCount = 25 }: HelloGlowProps) {
           0% {
             background: #48ff00;
             box-shadow: 0 0 5px #48ff00, 0 0 15px #48ff00, 0 0 30px #48ff00;
-            filter: hue-rotate(0deg);
+            filter: hue-rotate(0deg) blur(1px);
           }
           100% {
             background: #48ff00;
             box-shadow: 0 0 5px #48ff00, 0 0 15px #48ff00, 0 0 30px #48ff00;
-            filter: hue-rotate(360deg);
+            filter: hue-rotate(360deg) blur(1px);
           }
         }
       `}</style>
