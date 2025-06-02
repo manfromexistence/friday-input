@@ -50,10 +50,10 @@ export function HelloGlow({ className, spanCount = 25 }: HelloGlowProps) {
                   animation: hello-glow 13s linear infinite;
                   animation-delay: calc(var(--i)*0.1s);
                   transform: rotate(90deg);
-                  top: 0; /* Match parent span's top */
-                  bottom: 0; /* Match parent span's bottom */
-                  left: -2px; /* Make slightly wider to overlap more */
-                  right: -2px; /* Make slightly wider to overlap more */
+                  top: 0; 
+                  bottom: 0;
+                  left: -5px; /* Increased overlap */
+                  right: -5px; /* Increased overlap */
                 }
 
                 .hello span.start::after,
@@ -78,4 +78,3 @@ export function HelloGlow({ className, spanCount = 25 }: HelloGlowProps) {
     </>
   );
 }
-
