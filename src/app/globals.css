@@ -111,10 +111,10 @@ body {
 /* Styles for Hue Animated Textarea */
 @keyframes rotateHue {
   0% {
-    filter: hue-rotate(0deg) blur(var(--glow-blur, 8px));
+    filter: hue-rotate(0deg) blur(var(--glow-blur, 5px));
   }
   100% {
-    filter: hue-rotate(360deg) blur(var(--glow-blur, 8px));
+    filter: hue-rotate(360deg) blur(var(--glow-blur, 5px));
   }
 }
 
@@ -127,13 +127,13 @@ body {
 .glowing-textarea-wrapper::before {
   content: '';
   position: absolute;
-  /* inset value controls thickness of glow, -3px means it's 3px outside the wrapper boundaries */
-  inset: -3px; 
+  /* inset value controls thickness of glow, -4px means it's 4px outside the wrapper boundaries */
+  inset: -4px; 
   z-index: 0; /* Positioned behind the textarea */
-  /* border-radius should be textarea's radius + inset value to look correct */
+  /* border-radius should be textarea's radius + abs(inset value) to look correct */
   /* textarea rounded-md is calc(var(--radius) - 2px). var(--radius) = 0.5rem = 8px. So 6px. */
-  /* 6px (textarea) + 3px (inset offset) = 9px */
-  border-radius: calc(var(--radius) - 2px + 3px); 
+  /* 6px (textarea) + 4px (inset offset) = 10px */
+  border-radius: calc(var(--radius) - 2px + 4px); 
   background: conic-gradient(
     from 90deg,
     hsl(0, 100%, 65%), /* Red */
@@ -147,7 +147,7 @@ body {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   animation: rotateHue 4s linear infinite paused; /* Animation is paused initially */
-  --glow-blur: 8px; /* Customizable blur value via CSS variable */
+  --glow-blur: 5px; /* Customizable blur value via CSS variable */
   filter: blur(var(--glow-blur)); /* Apply initial blur for filter stack*/
 }
 
