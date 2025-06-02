@@ -114,7 +114,7 @@ export function Friday() {
           `animate-sides 10s linear infinite`; // Using animate-sides for glass div color cycle
         document.body.appendChild(newGlassDiv);
         glassDivRef.current = newGlassDiv;
-        void newGlassDiv.offsetWidth; 
+        void newGlassDiv.offsetWidth;
 
         const targetScrollDown = initialScrollY.current + littleScrollAmount;
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
@@ -127,7 +127,7 @@ export function Friday() {
               glassDivRef.current = null;
             }
             if (fridayTopRef.current) fridayTopRef.current.classList.add('visible');
-            
+
             const jiggleAmount = 30;
             springScrollTo(initialScrollY.current, () => {
               springScrollTo(initialScrollY.current - jiggleAmount, () => {
@@ -150,7 +150,7 @@ export function Friday() {
     }
   }, [isEffectEnabled, animatedScroll, springScrollTo, littleScrollAmount, slideAnimationDuration]);
 
-  const renderSpans = () => 
+  const renderSpans = () =>
     Array.from({ length: 25 }).map((_, i) => (
       <span key={i} style={{ '--i': i + 1 } as React.CSSProperties}></span>
     ));
@@ -167,7 +167,7 @@ export function Friday() {
       <div ref={fridayBottomRef} className="friday-bottom">{renderSpans()}</div>
       <div ref={fridayLeftRef} className="friday-left">{renderSpans()}</div>
       <div ref={fridayRightRef} className="friday-right">{renderSpans()}</div>
-      
+
       <style jsx global>{`
         .friday-effect-enabled {
           /* Used for body-level changes if needed */
@@ -183,7 +183,7 @@ export function Friday() {
           opacity: 0;
           visibility: hidden;
           transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
-          z-index: ${FRIDAY_ANIMATION_Z_INDEX -1}; 
+          z-index: ${FRIDAY_ANIMATION_Z_INDEX - 1}; 
           --friday-span-bg: #0f0; 
           --friday-glow-color1: #48ff00;
           --friday-glow-color2: #0f0;
@@ -229,7 +229,7 @@ export function Friday() {
         .friday-top span,
         .friday-bottom span {
           position: relative;
-          height: 25vh; /* Increased from 15vh */
+          height: 21vh; /* Increased from 15vh */
           width: 4vw; 
         }
         
@@ -286,9 +286,9 @@ export function Friday() {
           bottom: 0; 
           width: 100%;
           height: 0; 
-          background: rgba(0, 0, 0, 0.05); 
-          backdrop-filter: blur(2.5px);
-          -webkit-backdrop-filter: blur(2.5px);
+          background: hsl(var(--background)/0.50);
+          backdrop-filter: blur( 20px );
+          -webkit-backdrop-filter: blur( 20px );
           z-index: ${FRIDAY_ANIMATION_Z_INDEX};
           /* animation is set inline in JS */
         }
