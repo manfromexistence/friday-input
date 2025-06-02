@@ -20,10 +20,10 @@ export function HelloGlow({ className }: HelloGlowProps) {
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
       >
-        {[...Array(20)].map((_, i) => (
+        {Array.from({ length: 25 }).map((_, i) => (
           <span
             key={i}
-            className={i === 0 ? "start" : i === 19 ? "end" : ""}
+            className={i === 0 ? "start" : i === 24 ? "end" : ""}
             style={{ "--i": i + 1 } as React.CSSProperties}
           />
         ))}
@@ -32,13 +32,14 @@ export function HelloGlow({ className }: HelloGlowProps) {
                 .hello {
                   position: relative;
                   display: grid; /* Use grid */
-                  grid-template-columns: repeat(20, 1fr); /* Distribute 20 spans into 20 columns */
+                  grid-template-columns: repeat(25, 1fr); /* Distribute 25 spans into 25 columns */
                   min-height: 25px; /* Default height for the glow area */
                   overflow: hidden; /* Clip glows if they exceed span bounds due to box-shadow */
                 }
 
                 .hello span {
                   position: relative;
+                  /* Spans will take full height of their grid row and 1/25th of container width */
                 }
 
                 .hello span::after { /* Using only ::after */
