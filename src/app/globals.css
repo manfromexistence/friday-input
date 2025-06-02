@@ -111,10 +111,10 @@ body {
 /* Styles for Hue Animated Textarea */
 @keyframes rotateHue {
   0% {
-    filter: hue-rotate(0deg) blur(var(--glow-blur, 5px));
+    filter: hue-rotate(0deg) blur(var(--glow-blur));
   }
   100% {
-    filter: hue-rotate(360deg) blur(var(--glow-blur, 5px));
+    filter: hue-rotate(360deg) blur(var(--glow-blur));
   }
 }
 
@@ -147,7 +147,7 @@ body {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   animation: rotateHue 4s linear infinite paused; /* Animation is paused initially */
-  --glow-blur: 5px; /* Customizable blur value via CSS variable */
+  --glow-blur: 12px; /* Customizable blur value via CSS variable */
   filter: blur(var(--glow-blur)); /* Apply initial blur for filter stack*/
 }
 
