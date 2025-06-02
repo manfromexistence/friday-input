@@ -13,7 +13,7 @@ export function HelloGlow({ className }: HelloGlowProps) {
     <>
       <motion.div
         className={cn(
-          "hello flex flex-wrap justify-center transition-all", // Base classes
+          "hello transition-all", // Base classes
           className // External className for sizing, background, etc.
         )}
         whileHover={{ scale: 1.02 }}
@@ -31,18 +31,19 @@ export function HelloGlow({ className }: HelloGlowProps) {
       <style jsx global>{`
                 .hello {
                   position: relative;
-                  display: flex;
-                  flex-wrap: wrap;
-                  gap: 15px;
-                  overflow: hidden; /* To contain glows if they slightly exceed spans due to box-shadow */
+                  display: grid; /* Use grid */
+                  grid-template-columns: repeat(20, 1fr); /* Distribute 20 spans into 20 columns */
+                  /* Rows will implicitly be one, taking the container's height.
+                     If no height is set on the container via className,
+                     this min-height provides a default. */
+                  min-height: 25px; /* Default height for the glow area */
+                  overflow: hidden; /* Clip glows if they exceed span bounds due to box-shadow */
+                  /* Removed: flex-wrap, justify-content, gap from flex version */
                 }
 
                 .hello span {
                   position: relative;
-                  flex-grow: 1; /* Allow spans to grow */
-                  flex-basis: 20px; /* Initial width basis before growing */
-                  min-height: 25px; /* Minimum height for each span/glow segment */
-                  display: flex; /* Helps if span content needs alignment, though not strictly needed for current ::after */
+                  /* Removed: flex-grow, flex-basis, min-height from span itself */
                 }
 
                 .hello span::after { /* Using only ::after */
@@ -81,9 +82,3 @@ export function HelloGlow({ className }: HelloGlowProps) {
     </>
   );
 }
-
-// Included for completeness if not globally available via @/lib/utils for this specific component context
-// If you have a global `cn` utility (e.g., from shadcn/ui via @/lib/utils), you might not need this local one.
-// function cn(...classes: (string | undefined | null | false)[]) {
-//   return classes.filter(Boolean).join(' ');
-// }
