@@ -5,224 +5,319 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const FRIDAY_ANIMATION_Z_INDEX = 9990;
+const FRIDAY_ANIMATION_Z_INDEX = 9990; // Should be consistent if used elsewhere
 
 export function Friday() {
-  const [isActive, setIsActive] = useState(false);
-  const [animationStage, setAnimationStage] = useState(0); // 0: inactive, 1: bottom, 2: right, 3: left, 4: top, 5: all active
+  const [isEffectEnabled, setIsEffectEnabled] = useState(false);
 
-  const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
-  const isActiveRef = useRef(isActive); // Ref to track isActive for timeouts
+  const fridayTopRef = useRef<HTMLDivElement>(null);
+  const fridayBottomRef = useRef<HTMLDivElement>(null);
+  const fridayLeftRef = useRef<HTMLDivElement>(null);
+  const fridayRightRef = useRef<HTMLDivElement>(null);
+  const glassDivRef = useRef<HTMLDivElement | null>(null);
+  const initialScrollY = useRef(0);
 
-  useEffect(() => {
-    isActiveRef.current = isActive;
-  }, [isActive]);
+  const slideAnimationDuration = 750;
+  const littleScrollAmount = typeof window !== 'undefined' ? window.innerHeight * 0.1 : 0;
 
-  const clearAllTimeouts = useCallback(() => {
-    timeoutsRef.current.forEach(clearTimeout);
-    timeoutsRef.current = [];
+
+  const springScrollTo = useCallback((targetY: number, onComplete?: () => void) => {
+    if (typeof window === 'undefined') return;
+    let currentY = window.scrollY;
+    let scrollVelocity = 0;
+    const stiffness = 0.03;
+    const damping = 0.20;
+    const mass = 1;
+
+    function animateSpringFrame() {
+      const displacement = targetY - currentY;
+      const springForce = displacement * stiffness;
+      const dampingForce = -scrollVelocity * damping;
+      const acceleration = (springForce + dampingForce) / mass;
+
+      scrollVelocity += acceleration;
+      currentY += scrollVelocity;
+
+      window.scrollTo(0, currentY);
+
+      const isSettled = Math.abs(currentY - targetY) < 0.5 && Math.abs(scrollVelocity) < 0.5;
+      if (!isSettled) {
+        requestAnimationFrame(animateSpringFrame);
+      } else {
+        window.scrollTo(0, targetY);
+        scrollVelocity = 0;
+        if (onComplete) onComplete();
+      }
+    }
+    requestAnimationFrame(animateSpringFrame);
+  }, []);
+
+  const animatedScroll = useCallback((to: number, duration: number, onComplete?: () => void) => {
+    if (typeof window === 'undefined') return;
+    const start = window.scrollY;
+    const change = to - start;
+    let startTime: number | null = null;
+
+    function animateScrollFrame(currentTime: number) {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      let progress = Math.min(timeElapsed / duration, 1);
+
+      const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      window.scrollTo(0, start + change * easeInOutQuad(progress));
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScrollFrame);
+      } else {
+        window.scrollTo(0, to);
+        if (onComplete) onComplete();
+      }
+    }
+    requestAnimationFrame(animateScrollFrame);
+  }, []);
+
+
+  const toggleFridayEffect = useCallback(() => {
+    setIsEffectEnabled(prev => !prev);
   }, []);
 
   useEffect(() => {
-    if (isActive) {
-      if (animationStage === 0) { // Start sequence only if not already started
-        setAnimationStage(1); // Start bottom animation
+    if (typeof window === 'undefined') return;
 
-        timeoutsRef.current.push(setTimeout(() => {
-          if (!isActiveRef.current) return;
-          setAnimationStage(2); // Start right animation
-        }, 700)); // 0.7s delay
+    const allFridayElements = [
+      fridayTopRef.current,
+      fridayBottomRef.current,
+      fridayLeftRef.current,
+      fridayRightRef.current,
+    ].filter(el => el !== null) as HTMLDivElement[];
 
-        timeoutsRef.current.push(setTimeout(() => {
-          if (!isActiveRef.current) return;
-          setAnimationStage(3); // Start left animation
-        }, 1400)); // 0.7s after right
+    if (isEffectEnabled) {
+      document.body.classList.add('friday-effect-enabled');
+      allFridayElements.forEach(el => el.classList.remove('visible'));
 
-        timeoutsRef.current.push(setTimeout(() => {
-          if (!isActiveRef.current) return;
-          setAnimationStage(4); // Start top animation, glassmorphism fades
-        }, 2100)); // 0.7s after left
+      initialScrollY.current = window.scrollY;
 
-        timeoutsRef.current.push(setTimeout(() => {
-          if (!isActiveRef.current) return;
-          setAnimationStage(5); // All active and stable
-        }, 3000)); // Glassmorphism fully faded
+      if (fridayBottomRef.current) fridayBottomRef.current.classList.add('visible');
+
+      setTimeout(() => {
+        if (fridayRightRef.current) fridayRightRef.current.classList.add('visible');
+        setTimeout(() => {
+          if (fridayLeftRef.current) fridayLeftRef.current.classList.add('visible');
+        }, 150);
+      }, slideAnimationDuration / 2);
+
+      if (!glassDivRef.current) {
+        const newGlassDiv = document.createElement('div');
+        newGlassDiv.className = 'glass-effect-div';
+        newGlassDiv.style.animation =
+          `slideUp ${slideAnimationDuration / 1000}s ease-out forwards, ` +
+          `animate-sides 10s linear infinite`;
+        document.body.appendChild(newGlassDiv);
+        glassDivRef.current = newGlassDiv;
+        void newGlassDiv.offsetWidth; // Trigger reflow
+
+        const targetScrollDown = initialScrollY.current + littleScrollAmount;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        animatedScroll(Math.min(targetScrollDown, maxScroll), slideAnimationDuration * 0.9);
+
+        const handleAnimationEnd = (event: AnimationEvent) => {
+          if (event.animationName === 'slideUp') {
+            if (glassDivRef.current && glassDivRef.current.parentNode) {
+              glassDivRef.current.remove();
+              glassDivRef.current = null;
+            }
+            if (fridayTopRef.current) fridayTopRef.current.classList.add('visible');
+            
+            const jiggleAmount = 30;
+            springScrollTo(initialScrollY.current, () => {
+              springScrollTo(initialScrollY.current - jiggleAmount, () => {
+                springScrollTo(initialScrollY.current);
+              });
+            });
+            newGlassDiv.removeEventListener('animationend', handleAnimationEnd);
+          }
+        };
+        newGlassDiv.addEventListener('animationend', handleAnimationEnd);
       }
+
     } else {
-      clearAllTimeouts();
-      setAnimationStage(0);
+      document.body.classList.remove('friday-effect-enabled');
+      allFridayElements.forEach(el => el.classList.remove('visible'));
+      if (glassDivRef.current && glassDivRef.current.parentNode) {
+        glassDivRef.current.remove();
+        glassDivRef.current = null;
+      }
     }
+  }, [isEffectEnabled, animatedScroll, springScrollTo, littleScrollAmount]);
 
-    return () => {
-      clearAllTimeouts();
-    };
-  }, [isActive, clearAllTimeouts, animationStage]); // Rerun if isActive changes or animationStage reset to 0
-
-  const toggleFriday = () => {
-    setIsActive((prev) => !prev);
-    if (isActive) { // If was active, now deactivating
-      setAnimationStage(0); // Reset stage immediately
-    }
-  };
-
-  const borderBaseClasses = "friday-border fixed opacity-0 transition-opacity duration-500 ease-in-out";
-  const borderActiveClasses = "opacity-100";
-  
-  // Define common variables for CSS-in-JS
-  const glowBlur = '10px';
-  const borderRadius = '0.375rem'; // Corresponds to rounded-md in Tailwind
+  const renderSpans = () => 
+    Array.from({ length: 25 }).map((_, i) => (
+      <span key={i} style={{ '--i': i + 1 } as React.CSSProperties}></span>
+    ));
 
   return (
     <>
-      <div className="fixed bottom-4 left-4 z-[10000]">
-        <Button onClick={toggleFriday} variant="outline" className="shadow-lg">
-          {isActive ? "Deactivate Friday" : "Activate Friday"}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-[10001]">
+        <Button onClick={toggleFridayEffect} variant="outline" className="shadow-lg bg-green-500 hover:bg-green-600 text-white">
+          {isEffectEnabled ? "Deactivate Friday" : "Activate Friday"}
         </Button>
       </div>
 
-      {isActive && (
-        <>
-          {/* Bottom Border */}
-          <div
-            className={cn(
-              borderBaseClasses,
-              "h-1.5 bottom-0 left-0 right-0",
-              animationStage >= 1 && borderActiveClasses
-            )}
-          ></div>
-          {/* Right Border */}
-          <div
-            className={cn(
-              borderBaseClasses,
-              "w-1.5 top-0 bottom-0 right-0",
-              animationStage >= 2 && borderActiveClasses
-            )}
-          ></div>
-          {/* Left Border */}
-          <div
-            className={cn(
-              borderBaseClasses,
-              "w-1.5 top-0 bottom-0 left-0",
-              animationStage >= 3 && borderActiveClasses
-            )}
-          ></div>
-          {/* Top Border */}
-          <div
-            className={cn(
-              borderBaseClasses,
-              "h-1.5 top-0 left-0 right-0",
-              animationStage >= 4 && borderActiveClasses
-            )}
-          ></div>
-
-          {/* Glassmorphism Item */}
-          <div
-            className={cn(
-              "friday-glass-item fixed left-1/2 -translate-x-1/2 w-4/5 max-w-md h-24 rounded-lg shadow-2xl",
-              "opacity-0", // Initially hidden
-              animationStage >= 1 && "animate-glass-move-fade"
-            )}
-            style={{ zIndex: FRIDAY_ANIMATION_Z_INDEX + 1 }}
-          ></div>
-        </>
-      )}
+      <div ref={fridayTopRef} className="friday-top">{renderSpans()}</div>
+      <div ref={fridayBottomRef} className="friday-bottom">{renderSpans()}</div>
+      <div ref={fridayLeftRef} className="friday-left">{renderSpans()}</div>
+      <div ref={fridayRightRef} className="friday-right">{renderSpans()}</div>
+      
+      {/* Glass div is managed imperatively in useEffect to match original logic */}
 
       <style jsx global>{`
-        :root {
-          --friday-glow-blur: ${glowBlur};
-          --friday-radius: ${borderRadius};
+        /* Minimal reset from style.css - assuming globals.css handles most */
+        /* box-sizing is typically handled by Tailwind base */
+
+        /* Specific Friday effect styles from style.css */
+        .friday-effect-enabled {
+          /* This class could be used for body-level changes if needed */
         }
 
-        .friday-border {
-          z-index: ${FRIDAY_ANIMATION_Z_INDEX};
-          background: conic-gradient(
-            from 90deg,
-            hsl(0, 100%, 65%), hsl(60, 100%, 65%), hsl(120, 100%, 65%),
-            hsl(180, 100%, 65%), hsl(240, 100%, 65%), hsl(300, 100%, 65%),
-            hsl(0, 100%, 65%)
-          );
-          animation: friday-rotate-hue-border 4s linear infinite;
+        .friday-top,
+        .friday-bottom,
+        .friday-left,
+        .friday-right {
+          position: fixed;
+          width: 100%;
+          display: flex;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
+          z-index: ${FRIDAY_ANIMATION_Z_INDEX -1}; /* Ensure it's behind glass div */
         }
 
-        .friday-border::before { /* Glow */
-          content: "";
-          position: absolute;
-          inset: -3px; 
-          z-index: -1; 
-          border-radius: calc(var(--friday-radius) + 3px);
-          background: inherit; /* Use parent's gradient */
-          filter: blur(var(--friday-glow-blur));
-          animation: friday-rotate-hue-glow 4s linear infinite;
-          opacity: 0.7;
+        .friday-top.visible,
+        .friday-bottom.visible,
+        .friday-left.visible,
+        .friday-right.visible {
+          opacity: 1;
+          visibility: visible;
+          transition: opacity 0.5s ease-in-out, visibility 0s linear 0s;
+        }
+
+        .friday-top {
+          top: -6.85rem;
+          left: 0;
+        }
+
+        .friday-bottom {
+          bottom: -6.85rem;
+          left: 0;
+        }
+
+        .friday-left {
+          top: calc(50vh - 5px);
+          /* Adjusted for typical screen aspect ratios, might need tweaking */
+          right: calc(-50vh + 1.5vw); /* Approximate calc(-30px - 50vh) */
+          height: 10px; /* Effectively the 'width' of the vertical bar */
+          width: 100vh; /* Length of the vertical bar */
+          transform: rotate(90deg);
+          transform-origin: top right;
+        }
+
+        .friday-right {
+          top: calc(50vh - 5px);
+          /* Adjusted for typical screen aspect ratios */
+          left: calc(-50vh + 1.5vw); /* Approximate calc(-20px - 50vh) */
+          height: 10px;
+          width: 100vh;
+          transform: rotate(90deg);
+          transform-origin: top left;
         }
         
-        .friday-border.opacity-100::after { /* Splash, only when border becomes visible */
-          content: "";
-          position: absolute;
-          inset: 0;
-          z-index: 1; /* On top of the border's own gradient */
-          border-radius: var(--friday-radius);
-          border: 2px solid white;
-          background: transparent;
-          opacity: 0; /* Animation controls opacity */
-          pointer-events: none;
-          animation: friday-white-border-splash 0.5s ease-out forwards;
+        /* Spans for horizontal borders */
+        .friday-top span,
+        .friday-bottom span {
+          position: relative;
+          height: 15vh; /* Height of individual light segments */
+          width: 4vw; /* Width of individual light segments (approx 100vw / 25 spans) */
         }
         
-        /* Specific border positioning is handled by inline Tailwind classes */
-
-        .friday-glass-item {
-          background: rgba(255, 255, 255, 0.15);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.25);
+        /* Spans for vertical borders (after 90deg rotation) */
+        .friday-left span,
+        .friday-right span {
+          position: relative;
+          height: 2vh; /* This becomes the 'thickness' of the segment */
+          width: 4%;  /* This becomes the 'length' of the segment along the 100vh bar */
         }
 
-        @keyframes friday-rotate-hue-glow {
-          0% { filter: hue-rotate(0deg) blur(var(--friday-glow-blur)); }
-          100% { filter: hue-rotate(360deg) blur(var(--friday-glow-blur)); }
+        .friday-top span::before,
+        .friday-bottom span::before {
+          content: "";
+          position: absolute;
+          animation: animate-top-bottom 10s linear infinite;
+          animation-delay: calc(var(--i)*0.1s);
+          /* rotate: 90deg; This was in original, but seems incorrect for horizontal segment appearance */
+          background: #0f0; /* Fallback */
+          background: var(--friday-span-bg, #0f0);
+          top: -9px; /* Glow area */
+          bottom: -9px;
+          left: -5px;
+          right: -5px;
+          box-shadow:
+            0 0 4px var(--friday-glow-color1, #48ff00),
+            0 0 12px var(--friday-glow-color2, #0f0),
+            0 0 25px var(--friday-glow-color2, #0f0),
+            0 0 40px var(--friday-glow-color2, #0f0);
         }
 
-        @keyframes friday-rotate-hue-border {
+        .friday-left span::before,
+        .friday-right span::before {
+          content: "";
+          position: absolute;
+          animation: animate-sides 10s linear infinite;
+          animation-delay: calc(var(--i)*0.1s);
+          /* rotate: 90deg; This was in original for already rotated parent, seems redundant here */
+          background: #0f0; /* Fallback */
+          background: var(--friday-span-bg, #0f0);
+          top: -9px;
+          bottom: -9px;
+          left: -5px;
+          right: -5px;
+          box-shadow:
+            0 0 4px var(--friday-glow-color1, #0f0), /* Different base for sides for variety if desired */
+            0 0 12px var(--friday-glow-color2, #0f0),
+            0 0 25px var(--friday-glow-color2, #0f0),
+            0 0 40px var(--friday-glow-color2, #0f0);
+        }
+        
+        @keyframes animate-top-bottom {
           0% { filter: hue-rotate(0deg); }
           100% { filter: hue-rotate(360deg); }
         }
 
-        @keyframes friday-white-border-splash {
-          0% {
-            opacity: 1;
-            clip-path: circle(0% at 50% 50%); /* Start splash from center for borders */
-          }
-          50% {
-            opacity: 1;
-            clip-path: circle(150% at 50% 50%);
-          }
-          100% {
-            opacity: 0;
-            clip-path: circle(150% at 50% 50%);
-          }
-        }
-        
-        .animate-glass-move-fade {
-           animation: glass-move-and-fade 2.8s ease-out forwards;
+        @keyframes animate-sides {
+          0% { filter: hue-rotate(0deg); }
+          100% { filter: hue-rotate(360deg); }
         }
 
-        @keyframes glass-move-and-fade {
+        .glass-effect-div {
+          position: fixed;
+          left: 0;
+          bottom: 0; /* Start from bottom */
+          width: 100%;
+          height: 0; /* Start with 0 height, animation controls it */
+          background: rgba(0, 0, 0, 0.05); /* Semi-transparent black for glass */
+          backdrop-filter: blur(2.5px);
+          -webkit-backdrop-filter: blur(2.5px);
+          z-index: ${FRIDAY_ANIMATION_Z_INDEX};
+          /* animation is set inline in JS */
+        }
+
+        @keyframes slideUp {
           0% {
-            transform: translate(-50%, 100vh); /* Start below viewport */
-            opacity: 0;
-          }
-          15% {
-            transform: translate(-50%, 60vh); /* Move up a bit */
-            opacity: 1;
-          }
-          85% {
-            transform: translate(-50%, -100px); /* Move to near top */
-            opacity: 1;
+            height: 0;
+            bottom: 0; /* Explicitly start from bottom */
           }
           100% {
-            transform: translate(-50%, -200px); /* Move slightly further up and fade */
-            opacity: 0;
+            height: 100vh; /* Cover full viewport height */
+            bottom: 0; /* Ensure it stays at the bottom as it expands upwards */
           }
         }
       `}</style>
