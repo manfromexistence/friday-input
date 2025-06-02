@@ -128,33 +128,59 @@ body {
   }
 }
 
+@keyframes white-border-splash {
+  0% {
+    opacity: 1;
+    clip-path: circle(0% at 100% 100%);
+  }
+  50% {
+    opacity: 1;
+    clip-path: circle(150% at 100% 100%); /* Expands to cover the whole element */
+  }
+  100% {
+    opacity: 0;
+    clip-path: circle(150% at 100% 100%); /* Stays expanded while fading out */
+  }
+}
+
 .glowing-textarea-wrapper {
   position: relative;
   display: block;
   width: 100%;
 }
 
+/* Outer Glow */
 .glowing-textarea-wrapper::before {
   content: '';
   position: absolute;
-  inset: -4px;
-  z-index: 0;
-  border-radius: calc(var(--radius) - 2px + 4px);
+  inset: -4px; /* Sits 2px outside the 2px border area */
+  z-index: 0; /* Behind textarea and splash */
+  border-radius: calc(var(--radius) + 2px); /* Matches the outer edge of a 2px border + 2px glow padding */
   background: conic-gradient(
     from 90deg,
-    hsl(0, 100%, 65%), /* Red */
-    hsl(60, 100%, 65%), /* Yellow */
-    hsl(120, 100%, 65%), /* Green */
-    hsl(180, 100%, 65%), /* Cyan */
-    hsl(240, 100%, 65%), /* Blue */
-    hsl(300, 100%, 65%), /* Magenta */
-    hsl(0, 100%, 65%) /* Back to Red */
+    hsl(0, 100%, 65%), hsl(60, 100%, 65%), hsl(120, 100%, 65%),
+    hsl(180, 100%, 65%), hsl(240, 100%, 65%), hsl(300, 100%, 65%),
+    hsl(0, 100%, 65%)
   );
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   animation: rotateHue 4s linear infinite paused;
-  --glow-blur: 12px;
+  --glow-blur: 12px; /* Controls the size of the glow */
   filter: blur(var(--glow-blur));
+}
+
+/* White Splash Border */
+.glowing-textarea-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0; /* Covers the textarea element itself */
+  z-index: 2; /* On top of the textarea's own border, below the glow */
+  border-radius: var(--radius); /* Match textarea's border-radius */
+  border: 2px solid white; /* The white splash */
+  background: transparent; /* So only the border is visible */
+  opacity: 0; /* Animation controls opacity */
+  pointer-events: none; /* Allows clicks to pass through to the textarea */
+  clip-path: circle(0% at 100% 100%); /* Initial clipped state at bottom-right */
 }
 
 .glowing-textarea-wrapper:hover::before {
@@ -162,29 +188,28 @@ body {
   animation-play-state: running;
 }
 
+.glowing-textarea-wrapper:hover::after {
+  animation: white-border-splash 0.5s ease-out forwards;
+}
+
 .glowing-textarea-wrapper > textarea {
   position: relative;
-  z-index: 1;
+  z-index: 1; /* Above the glow, below the splash */
   width: 100%;
-  border-width: 3px; /* Ensure textarea has a 2px border width */
+  border-width: 2px; /* Default border width */
   /* Base styles are applied by Shadcn/Tailwind */
 }
 
 .glowing-textarea-wrapper:hover > textarea {
-  border-color: transparent !important; /* Override Shadcn border for gradient to show */
+  border-color: transparent !important; /* Hide original border for gradient */
   background-image: linear-gradient(hsl(var(--background)), hsl(var(--background))),
                     conic-gradient(
                       from 90deg,
-                      hsl(0, 100%, 65%),
-                      hsl(60, 100%, 65%),
-                      hsl(120, 100%, 65%),
-                      hsl(180, 100%, 65%),
-                      hsl(240, 100%, 65%),
-                      hsl(300, 100%, 65%),
+                      hsl(0, 100%, 65%), hsl(60, 100%, 65%), hsl(120, 100%, 65%),
+                      hsl(180, 100%, 65%), hsl(240, 100%, 65%), hsl(300, 100%, 65%),
                       hsl(0, 100%, 65%)
                     );
   background-origin: border-box;
-  background-clip: padding-box, border-box; /* Solid bg for content/padding, gradient for border */
+  background-clip: padding-box, border-box; /* Gradient only visible in border area */
   animation: rotateHueBorder 4s linear infinite;
 }
-
