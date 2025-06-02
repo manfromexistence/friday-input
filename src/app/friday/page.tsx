@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 const FRIDAY_ANIMATION_Z_INDEX = 9990; // Should be consistent if used elsewhere
 
-export function Friday() {
+export default function Friday() {
   const [isEffectEnabled, setIsEffectEnabled] = useState(false);
 
   const fridayTopRef = useRef<HTMLDivElement>(null);
@@ -306,4 +306,3 @@ export function Friday() {
     </>
   );
 }
-
