@@ -166,7 +166,7 @@ body {
   position: relative;
   z-index: 1;
   width: 100%;
-  border-width: 2px; /* Ensure textarea has a 2px border width */
+  border-width: 3px; /* Ensure textarea has a 2px border width */
   /* Base styles are applied by Shadcn/Tailwind */
 }
 
@@ -187,3 +187,4 @@ body {
   background-clip: padding-box, border-box; /* Solid bg for content/padding, gradient for border */
   animation: rotateHueBorder 4s linear infinite;
 }
+
