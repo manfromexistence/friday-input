@@ -111,10 +111,10 @@ export function Friday() {
         newGlassDiv.className = 'glass-effect-div';
         newGlassDiv.style.animation =
           `slideUp ${slideAnimationDuration / 1000}s ease-out forwards, ` +
-          `animate-sides 10s linear infinite`; // Using animate-sides for glass div color cycle
+          `animate-sides 10s linear infinite`;
         document.body.appendChild(newGlassDiv);
         glassDivRef.current = newGlassDiv;
-        void newGlassDiv.offsetWidth; // Trigger reflow
+        void newGlassDiv.offsetWidth; 
 
         const targetScrollDown = initialScrollY.current + littleScrollAmount;
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
@@ -148,7 +148,7 @@ export function Friday() {
         glassDivRef.current = null;
       }
     }
-  }, [isEffectEnabled, animatedScroll, springScrollTo, littleScrollAmount]);
+  }, [isEffectEnabled, animatedScroll, springScrollTo, littleScrollAmount, slideAnimationDuration]);
 
   const renderSpans = () => 
     Array.from({ length: 25 }).map((_, i) => (
@@ -168,15 +168,9 @@ export function Friday() {
       <div ref={fridayLeftRef} className="friday-left">{renderSpans()}</div>
       <div ref={fridayRightRef} className="friday-right">{renderSpans()}</div>
       
-      {/* Glass div is managed imperatively in useEffect to match original logic */}
-
       <style jsx global>{`
-        /* Minimal reset from style.css - assuming globals.css handles most */
-        /* box-sizing is typically handled by Tailwind base */
-
-        /* Specific Friday effect styles from style.css */
         .friday-effect-enabled {
-          /* This class could be used for body-level changes if needed */
+          /* Used for body-level changes if needed */
         }
 
         .friday-top,
@@ -184,13 +178,13 @@ export function Friday() {
         .friday-left,
         .friday-right {
           position: fixed;
-          width: 100%; /* Overridden for left/right to 100vh */
+          width: 100%; 
           display: flex;
           opacity: 0;
           visibility: hidden;
           transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
-          z-index: ${FRIDAY_ANIMATION_Z_INDEX -1}; /* Ensure it's behind glass div */
-          --friday-span-bg: #0f0; /* Default green */
+          z-index: ${FRIDAY_ANIMATION_Z_INDEX -1}; 
+          --friday-span-bg: #0f0; 
           --friday-glow-color1: #48ff00;
           --friday-glow-color2: #0f0;
         }
@@ -216,37 +210,34 @@ export function Friday() {
 
         .friday-left {
           top: calc(50vh - 5px);
-          right: calc(-50vh + 1.5vw); 
+          right: calc(-30px - 50vh); /* Original positioning from style.css */
           height: 10px; 
           width: 100vh; 
           transform: rotate(90deg);
-          transform-origin: top right;
+          transform-origin: 50% 50%; /* Explicitly set to match implicit original */
         }
 
         .friday-right {
           top: calc(50vh - 5px);
-          left: calc(-50vh + 1.5vw); 
+          left: calc(-20px - 50vh); /* Original positioning from style.css */
           height: 10px;
           width: 100vh;
           transform: rotate(90deg);
-          transform-origin: top left;
+          transform-origin: 50% 50%; /* Explicitly set to match implicit original */
         }
         
-        /* Spans for horizontal borders */
         .friday-top span,
         .friday-bottom span {
           position: relative;
-          height: 15vh; /* Height of individual light segments */
-          width: 4vw; /* Width of individual light segments (approx 100vw / 25 spans) */
+          height: 15vh; 
+          width: 4vw; 
         }
         
-        /* Spans for vertical borders (after 90deg rotation) */
-        /* These spans are children of .friday-left/right which is already rotated */
         .friday-left span,
         .friday-right span {
           position: relative;
-          height: 2vh; /* This becomes the 'thickness' of the segment along the 10px height of parent */
-          width: 4%;  /* This becomes the 'length' of the segment along the 100vh width of parent */
+          height: 2vh; 
+          width: 4%;  
         }
 
         .friday-top span::before,
@@ -266,10 +257,9 @@ export function Friday() {
             0 0 12px var(--friday-glow-color2),
             0 0 25px var(--friday-glow-color2),
             0 0 40px var(--friday-glow-color2);
-          transform: rotate(90deg); /* Crucial: Restored rotation for all segments */
+          transform: rotate(90deg); /* Crucial for segment orientation */
         }
         
-        /* Specific animations for ::before elements */
         .friday-top span::before,
         .friday-bottom span::before {
           animation: animate-top-bottom 10s linear infinite;
@@ -293,10 +283,10 @@ export function Friday() {
         .glass-effect-div {
           position: fixed;
           left: 0;
-          bottom: 0; /* Start from bottom */
+          bottom: 0; 
           width: 100%;
-          height: 0; /* Start with 0 height, animation controls it */
-          background: rgba(0, 0, 0, 0.05); /* Semi-transparent black for glass */
+          height: 0; 
+          background: rgba(0, 0, 0, 0.05); 
           backdrop-filter: blur(2.5px);
           -webkit-backdrop-filter: blur(2.5px);
           z-index: ${FRIDAY_ANIMATION_Z_INDEX};
@@ -306,16 +296,14 @@ export function Friday() {
         @keyframes slideUp {
           0% {
             height: 0;
-            bottom: 0; /* Explicitly start from bottom */
+            bottom: 0; 
           }
           100% {
-            height: 100vh; /* Cover full viewport height */
-            bottom: 0; /* Ensure it stays at the bottom as it expands upwards */
+            height: 100vh; 
+            bottom: 0; 
           }
         }
       `}</style>
     </>
   );
 }
-
-    
