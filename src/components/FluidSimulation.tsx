@@ -993,6 +993,17 @@ const FluidSimulation: React.FC = () => {
         return obj;
     };
 
+    const getResolution = (resolution: number): { width: number, height: number } => {
+        const currentGl = glRef.current;
+        if (!currentGl) return { width: resolution, height: resolution };
+        let aspectRatio = currentGl.drawingBufferWidth / currentGl.drawingBufferHeight;
+        if (aspectRatio < 1) aspectRatio = 1.0 / aspectRatio;
+        let min = Math.round(resolution);
+        let max = Math.round(resolution * aspectRatio);
+        if (currentGl.drawingBufferWidth > currentGl.drawingBufferHeight) return { width: max, height: min };
+        else return { width: min, height: max };
+    };
+    
     const initFramebuffers = () => {
         const currentGl = glRef.current;
         const currentExt = extRef.current;
@@ -1067,17 +1078,6 @@ const FluidSimulation: React.FC = () => {
         sunraysFBO.current = createFBO(res.width, res.height, r.internalFormat, r.format, texType, filtering);
         sunraysTempFBO.current = createFBO(res.width, res.height, r.internalFormat, r.format, texType, filtering);
     };
-
-    const getResolution = (resolution: number): { width: number, height: number } => {
-        const currentGl = glRef.current;
-        if (!currentGl) return { width: resolution, height: resolution };
-        let aspectRatio = currentGl.drawingBufferWidth / currentGl.drawingBufferHeight;
-        if (aspectRatio < 1) aspectRatio = 1.0 / aspectRatio;
-        let min = Math.round(resolution);
-        let max = Math.round(resolution * aspectRatio);
-        if (currentGl.drawingBufferWidth > currentGl.drawingBufferHeight) return { width: max, height: min };
-        else return { width: min, height: max };
-    };
     
     ditheringTexture.current = createTextureAsync("/LDR_LLL1_0.png"); // Path relative to public folder
 
@@ -1127,21 +1127,6 @@ const FluidSimulation: React.FC = () => {
         return radius;
     };
 
-    const multipleSplats = (amount: number) => {
-        for (let i = 0; i < amount; i++) {
-            const color = generateColor();
-            color.r *= 10.0;
-            color.g *= 10.0;
-            color.b *= 10.0;
-            const x = Math.random();
-            const y = Math.random();
-            const dx = 1000 * (Math.random() - 0.5);
-            const dy = 1000 * (Math.random() - 0.5);
-            splat(x, y, dx, dy, color);
-        }
-    };
-    multipleSplats(parseInt((Math.random() * 20).toString()) + 5);
-
     const HSVtoRGB = (h: number, s: number, v: number): RGBAColor => {
         let r = 0, g = 0, b = 0, i, f, p, q, t;
         i = Math.floor(h * 6);
@@ -1167,6 +1152,21 @@ const FluidSimulation: React.FC = () => {
         c.b *= 0.15;
         return c;
     };
+    
+    const multipleSplats = (amount: number) => {
+        for (let i = 0; i < amount; i++) {
+            const color = generateColor();
+            color.r *= 10.0;
+            color.g *= 10.0;
+            color.b *= 10.0;
+            const x = Math.random();
+            const y = Math.random();
+            const dx = 1000 * (Math.random() - 0.5);
+            const dy = 1000 * (Math.random() - 0.5);
+            splat(x, y, dx, dy, color);
+        }
+    };
+    multipleSplats(parseInt((Math.random() * 20).toString()) + 5);
     
     // Main update loop
     const mainUpdate = () => {
