@@ -1,12 +1,14 @@
 
 "use client";
 
-import FluidSimulation from "@/components/FluidSimulation";
+import { HelloGlow } from "@/components/HelloGlow";
+// import FluidSimulation from "@/components/FluidSimulation";
 
 export default function HomePage() {
   return (
     <>
-      <FluidSimulation />
+      <HelloGlow />
+      {/* <FluidSimulation /> */}
     </>
   );
 }
