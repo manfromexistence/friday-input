@@ -4,10 +4,19 @@
 import { motion } from "framer-motion";
 
 interface HelloGlowProps {
-  size?: number;
+  glowThickness?: number;
+  glowLength?: number;
 }
 
-export function HelloGlow({ size = 5 }: HelloGlowProps) {
+export function HelloGlow({ glowThickness = 25, glowLength = 15 }: HelloGlowProps) {
+  const spanHeight = 25; // Fixed height of the span element
+  const spanWidth = 5;   // Fixed width of the span element
+
+  const topOffset = (spanHeight - glowThickness) / 2;
+  const bottomOffset = (spanHeight - glowThickness) / 2;
+  const leftOffset = (spanWidth - glowLength) / 2;
+  const rightOffset = (spanWidth - glowLength) / 2;
+
   return (
     <>
       <motion.div
@@ -15,7 +24,12 @@ export function HelloGlow({ size = 5 }: HelloGlowProps) {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        style={{ '--glow-horizontal-offset': `${size}px` } as React.CSSProperties}
+        style={{
+          '--glow-top-offset': `${topOffset}px`,
+          '--glow-bottom-offset': `${bottomOffset}px`,
+          '--glow-left-offset': `${leftOffset}px`,
+          '--glow-right-offset': `${rightOffset}px`,
+        } as React.CSSProperties}
       >
         {[...Array(20)].map((_, i) => (
           <span
@@ -34,8 +48,8 @@ export function HelloGlow({ size = 5 }: HelloGlowProps) {
 
                 .hello span {
                   position: relative;
-                  height: 25px; /* This determines the thickness of the rotated bar */
-                  width: 5px;   /* Base width for calculating length */
+                  height: 25px; /* Fixed height of the span container */
+                  width: 5px;   /* Fixed width of the span container */
                 }
 
                 .hello span::after,
@@ -47,10 +61,10 @@ export function HelloGlow({ size = 5 }: HelloGlowProps) {
                   transition: all 0.5s ease-in-out;
                   transform: rotate(90deg);
                     
-                  top: 0px; /* Fixed: ensures thickness is based on span height */
-                  bottom: 0px; /* Fixed: ensures thickness is based on span height */
-                  left: calc(var(--glow-horizontal-offset, 5px) * -1); /* Controlled by size prop */
-                  right: calc(var(--glow-horizontal-offset, 5px) * -1); /* Controlled by size prop */
+                  top: var(--glow-top-offset);
+                  bottom: var(--glow-bottom-offset);
+                  left: var(--glow-left-offset);
+                  right: var(--glow-right-offset);
                 }
 
                 .hello span.start::after,
