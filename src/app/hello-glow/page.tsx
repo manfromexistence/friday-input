@@ -9,12 +9,12 @@ interface HelloGlowProps {
   spanCount?: number;
 }
 
-export function HelloGlow({ className, spanCount = 25 }: HelloGlowProps) {
+export default function HelloGlow({ className, spanCount = 25 }: HelloGlowProps) {
   return (
     <>
       <motion.div
         className={cn(
-          "hello transition-all h-64 w-1/2",
+          "hello transition-all h-64 w-[90%] mx-auto mt-12",
           className
         )}
         style={{ '--span-count': spanCount } as React.CSSProperties}
