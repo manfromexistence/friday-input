@@ -14,7 +14,7 @@ export function HelloGlow({ className, spanCount = 25 }: HelloGlowProps) {
     <>
       <motion.div
         className={cn(
-          "hello transition-all",
+          "hello transition-all overflow-hidden h-64",
           className
         )}
         style={{ '--span-count': spanCount } as React.CSSProperties}
