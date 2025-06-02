@@ -1,12 +1,12 @@
 
 "use client";
 
-import { HelloGlow } from "@/components/HelloGlow";
+import { HelloGlow } from "@/app/hello-glow/page";
 
 export default function HomePage() {
   return (
     <>
-    <HelloGlow />
+      <HelloGlow />
     </>
   );
 }
