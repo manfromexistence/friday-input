@@ -25,7 +25,7 @@ export default function HueTextAreaPage() {
             <Textarea
               id="hue-textarea"
               placeholder="Type something beautiful..."
-              className="w-full h-40 text-base font-body resize-none p-4 focus:ring-none focus:ring-ring"
+              className="w-full h-40 text-base font-body resize-none p-4 focus-visible:ring-0 focus-visible:ring-offset-0"
               aria-label="Hue animated textarea input field"
             />
           </div>
