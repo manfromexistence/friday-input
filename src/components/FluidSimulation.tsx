@@ -317,7 +317,7 @@ const FluidSimulation: React.FC = () => {
     const getWebGLContext = (canvas: HTMLCanvasElement): { gl: WebGL2RenderingContext | WebGLRenderingContext, ext: WebGLExtensions } => {
         const params = { alpha: true, depth: false, stencil: false, antialias: false, preserveDrawingBuffer: false };
 
-        let gl = canvas.getContext("webgl2", params) as WebGL2RenderingContext | null;
+        let gl:any = canvas.getContext("webgl2", params) as WebGL2RenderingContext | null;
         const isWebGL2 = !!gl;
         if (!isWebGL2) {
             gl = (canvas.getContext("webgl", params) || canvas.getContext("experimental-webgl", params)) as WebGLRenderingContext | null;
